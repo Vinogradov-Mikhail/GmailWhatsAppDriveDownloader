@@ -14,11 +14,14 @@ namespace GmailViewer.GoogleApiDownloader
 
         public string mimeType;
 
-        public Attachment(string names, byte[] name, string type)
+        public string path;
+
+        public Attachment(string names, string pathTo, byte[] name, string type)
         {
             this.namestr = names;
             this.name = name;
             this.mimeType = type;
+            this.path = pathTo;
         }
     }
 }

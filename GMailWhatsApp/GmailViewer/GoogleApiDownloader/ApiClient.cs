@@ -10,11 +10,48 @@ using System.IO;
 using GmailViewer.GoogleApiDownloader;
 using GmailViewer.ImapDownloader;
 using GmailViewer;
+using System.Diagnostics;
 
 namespace GmailDownloader
 {
     class ApiClient
     {
+        public static IList<Message> GetListOfSomeMessages(GmailService service, String emailFolder, int amount)
+        {
+            var request = service.Users.Messages.List("me");
+            request.LabelIds = emailFolder;
+            request.MaxResults = amount;
+            return request.Execute().Messages;
+        }
+
+        /// <summary>
+        /// get all message
+        /// </summary>
+        /// <param name="service"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public static List<Message> GetListOfAllMessages(GmailService service, string emailFolder)
+        {
+            List<Message> result = new List<Message>();
+            UsersResource.MessagesResource.ListRequest request = service.Users.Messages.List("me");
+            request.LabelIds = emailFolder;
+            do
+            {
+                try
+                {
+                    ListMessagesResponse response = request.Execute();
+                    result.AddRange(response.Messages);
+                    request.PageToken = response.NextPageToken;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("An error occurred: " + e.Message);
+                }
+            } while (!String.IsNullOrEmpty(request.PageToken));
+
+            return result;
+        }
+
         public static Message GetMessage(GmailService service, String userId, String messageId)
         {
             try
@@ -147,7 +184,14 @@ namespace GmailDownloader
                     }                    
                     break;
                 case "multipart/mixed":
-                    meesageText = "Click to open mixed";
+                    var partss = message.Payload.Parts;
+                    foreach (var part in partss)
+                    {
+                        if (part.MimeType == "text/plain")
+                        {
+                            meesageText = ConverteToUTFGoogle(part.Body.Data);
+                        }
+                    }
                     break;
                 case "text/html":
                     meesageText = "Click to open";                 
@@ -194,11 +238,14 @@ namespace GmailDownloader
                         String attId = part.Body.AttachmentId;
                         MessagePartBody attachPart = service.Users.Messages.Attachments.Get(userId, messageId, attId).Execute();
                         var converte = ConverteBase64Google(attachPart.Data);
+                        var path = "";
                         if (save)
-                        {
-                            File.WriteAllBytes(Path.Combine("C:\\GmailViewer", part.Filename), converte);
+                        {                            
+                            path = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName) + "\\" + messageId + "\\";
+                            Directory.CreateDirectory(path);
+                            File.WriteAllBytes(path + part.Filename, converte);
                         }
-                        var attachment = new Attachment(part.Filename, converte, part.MimeType);
+                        var attachment = new Attachment(part.Filename, path,converte, part.MimeType);
                         attac.Add(attachment);
                     }
                 }
@@ -237,10 +284,13 @@ namespace GmailDownloader
             mainEntity.MimeVersion = GetEmailMetadata(email.message, "MIME-Version");
             if (attac.Count != 0)
             {
-                MimeEntity attachmentEntity = mainEntity.ChildEntities.Add();
-                attachmentEntity.ContentTypeString = attac[0].mimeType;
-                attachmentEntity.ContentTransferEncoding = ContentTransferEncoding_enum.QuotedPrintable;
-                attachmentEntity.Data = attac[0].name;
+                foreach (var att in attac)
+                {
+                    MimeEntity attachmentEntity = mainEntity.ChildEntities.Add();
+                    attachmentEntity.ContentTypeString = att.mimeType;
+                    attachmentEntity.ContentTransferEncoding = ContentTransferEncoding_enum.QuotedPrintable;
+                    attachmentEntity.Data = att.name;
+                }
             }
             emlmes.ToFile(folderPath + "\\" + email.message.Id + ".eml");
         }
@@ -274,12 +324,13 @@ namespace GmailDownloader
                 case MessageState.None:
                     break;
             }
-            //string filePath;
-            //foreach (var msgAtachment in attac)
-            //{
-            //    filePath = msgAtachment.name;
-            //    email.Attachments.Add(msgAtachment.namestr, Path.GetFileName(filePath));
-            //}
+            string filePath;
+            foreach (var msgAtachment in attac)
+            {
+                filePath = msgAtachment.path;
+                FileStream fstream = new FileStream(filePath + msgAtachment.namestr, FileMode.OpenOrCreate);
+                email.Attachments.Add(fstream, msgAtachment.namestr);
+            }
             using (var file = File.Open(Path.Combine(folderPath, Path.GetRandomFileName() + ".msg"), FileMode.CreateNew, FileAccess.Write))
                 email.Save(file);
         }

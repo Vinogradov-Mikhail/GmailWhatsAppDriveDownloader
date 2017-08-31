@@ -5,6 +5,7 @@ using Google.Apis.Gmail.v1.Data;
 using Google.Apis.Services;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -34,19 +35,26 @@ namespace GmailViewer.GmailDownloader
         /// <param name="request"></param>
         public List<Email> ShowUserMessage(GmailService service, string emailFolder, UsersResource.MessagesResource.ListRequest request, int amount)
         {
-            request.LabelIds = emailFolder;
-            request.MaxResults = amount;         
-            IList<Message> messages = request.Execute().Messages;
+            List<Message> messages;
+            if (amount == 0)
+            {
+                messages = ApiClient.GetListOfAllMessages(service, emailFolder);
+            }
+            else
+            {
+                var list = ApiClient.GetListOfSomeMessages(service, emailFolder, amount);
+                messages = list.OfType<Message>().ToList();
+            }         
             List<Email> emailList = new List<Email>();
             if (messages != null && messages.Count > 0)
             {
-                Parallel.ForEach(messages, (sms) =>
+                foreach(var sms in messages)
                 {
                     var message = ApiClient.GetMessage(service, "me", sms.Id);
                     var email = new ApiEmail(message);
                     emailList.Add(email);
-                    //ApiClient.GetAttachments(service, message, "me", sms.Id, true);
-                });
+                    ApiClient.GetAttachments(service, message, "me", sms.Id, true);
+                }
             }
             return emailList;
         }
@@ -74,7 +82,7 @@ namespace GmailViewer.GmailDownloader
             if (messages != null && messages.Count > 0)
             {
                 int j = 0;
-                Parallel.For(0, messages.Count, i => 
+                for(int i = 0; i < messages.Count; ++i) 
                 {
                     if (i == ids[j])
                     {
@@ -92,7 +100,7 @@ namespace GmailViewer.GmailDownloader
                                 break;
                         }
                     }
-                });
+                }
             }
         }
 

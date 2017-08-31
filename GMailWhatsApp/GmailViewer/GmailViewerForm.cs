@@ -51,11 +51,11 @@ namespace GmailViewer
         }
 
         private void ShowEmails()
-        {
+        {         
             mailView.Focus();
             mailView.ClearEmails();
             try
-            {
+            {               
                 List<Email> emailList = gmail.GetEmails(stringToFolderType[folderComboBox.Text], GetEmailsAmount());
 
                 if (emailList == null)
@@ -81,10 +81,18 @@ namespace GmailViewer
             signInForm.Show();
         }
 
+        private void ChangeVisibale(bool state)
+        {
+            amountLabel.Visible = state;
+            downloadAllButton.Visible = state;
+            folderLabel.Visible = state;
+            folderComboBox.Visible = state;
+            emailAmountComboBox.Visible = state;
+        }
+
         internal void TrySignIn(string login, string password, AuthType authType)
         {
             mailView.ClearEmails();
-
             try
             {
                 switch (authType)
@@ -108,6 +116,8 @@ namespace GmailViewer
                 if (whatsapp == null)
                 {
                     gmail.Connect(login, password);
+                    mailView.Visible = true;
+                    ChangeVisibale(true);
                 }
                 connectionStatusTextBox.ForeColor = Color.Green;
                 connectionStatusTextBox.Text = "Authentication success";
@@ -125,6 +135,7 @@ namespace GmailViewer
             }
             else
             {
+                fileView.Visible = true;
                 ShowBackups();
             }
         }
@@ -181,9 +192,13 @@ namespace GmailViewer
 
         private void SignoutButton_Click(object sender, EventArgs e)
         {
+            fileView.Items.Clear();
+            fileView.Visible = false;
             gmail.ReConnect();
             signoutButton.Enabled = false;
             mailView.ClearEmails();
+            mailView.Visible = false;
+            ChangeVisibale(false);
             connectionStatusTextBox.Text = "";
             downloadAllButton.Enabled = false;
         }
@@ -237,7 +252,7 @@ namespace GmailViewer
                     string[] ss = file.Split(new char[] { '\\' });
                     var atribute = new FileInfo(file);
                     var size = atribute.Length / 1024;
-                    mailView.Items.Add(new ListViewItem(new[] { ss[ss.Length - 1], size.ToString() + " Kb", path }));
+                    fileView.Items.Add(new ListViewItem(new[] { ss[ss.Length - 1], size.ToString() + " Kb", path }));
                 }
             }
         }

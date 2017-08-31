@@ -51,6 +51,10 @@
             this.htmlColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.dateColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.statusColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.fileView = new System.Windows.Forms.ListView();
+            this.Name = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.Size = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.Path = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SaveMenu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -82,9 +86,9 @@
             this.gmailLabel.Location = new System.Drawing.Point(16, 12);
             this.gmailLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.gmailLabel.Name = "gmailLabel";
-            this.gmailLabel.Size = new System.Drawing.Size(44, 17);
+            this.gmailLabel.Size = new System.Drawing.Size(54, 17);
             this.gmailLabel.TabIndex = 8;
-            this.gmailLabel.Text = "Gmail";
+            this.gmailLabel.Text = "Google";
             // 
             // connectionStatusTextBox
             // 
@@ -108,6 +112,7 @@
             this.amountLabel.Size = new System.Drawing.Size(68, 17);
             this.amountLabel.TabIndex = 11;
             this.amountLabel.Text = "Show last";
+            this.amountLabel.Visible = false;
             // 
             // emailAmountComboBox
             // 
@@ -117,12 +122,14 @@
             this.emailAmountComboBox.Items.AddRange(new object[] {
             "10",
             "25",
-            "100"});
+            "100",
+            "00"});
             this.emailAmountComboBox.Location = new System.Drawing.Point(868, 388);
             this.emailAmountComboBox.Margin = new System.Windows.Forms.Padding(4);
             this.emailAmountComboBox.Name = "emailAmountComboBox";
             this.emailAmountComboBox.Size = new System.Drawing.Size(160, 24);
             this.emailAmountComboBox.TabIndex = 6;
+            this.emailAmountComboBox.Visible = false;
             // 
             // SaveMenu
             // 
@@ -179,6 +186,7 @@
             this.downloadAllButton.TabIndex = 3;
             this.downloadAllButton.Text = "Download All";
             this.downloadAllButton.UseVisualStyleBackColor = true;
+            this.downloadAllButton.Visible = false;
             this.downloadAllButton.Click += new System.EventHandler(this.DownloadAllButton_Click);
             // 
             // folderComboBox
@@ -186,12 +194,12 @@
             this.folderComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.folderComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.folderComboBox.FormattingEnabled = true;
             this.folderComboBox.Location = new System.Drawing.Point(68, 36);
             this.folderComboBox.Margin = new System.Windows.Forms.Padding(4);
             this.folderComboBox.Name = "folderComboBox";
             this.folderComboBox.Size = new System.Drawing.Size(197, 24);
             this.folderComboBox.TabIndex = 2;
+            this.folderComboBox.Visible = false;
             // 
             // folderLabel
             // 
@@ -202,6 +210,7 @@
             this.folderLabel.Size = new System.Drawing.Size(48, 17);
             this.folderLabel.TabIndex = 12;
             this.folderLabel.Text = "Folder";
+            this.folderLabel.Visible = false;
             // 
             // mailView
             // 
@@ -225,6 +234,7 @@
             this.mailView.TabIndex = 5;
             this.mailView.UseCompatibleStateImageBehavior = false;
             this.mailView.View = System.Windows.Forms.View.Details;
+            this.mailView.Visible = false;
             this.mailView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.MailView_MouseDown);
             this.mailView.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.MailViewMouseDoubleClick);
             // 
@@ -262,11 +272,45 @@
             this.statusColumn.Text = "Status";
             this.statusColumn.Width = 59;
             // 
+            // fileView
+            // 
+            this.fileView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.fileView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.Name,
+            this.Size,
+            this.Path});
+            this.fileView.GridLines = true;
+            this.fileView.Location = new System.Drawing.Point(19, 69);
+            this.fileView.Name = "fileView";
+            this.fileView.Size = new System.Drawing.Size(998, 295);
+            this.fileView.TabIndex = 13;
+            this.fileView.UseCompatibleStateImageBehavior = false;
+            this.fileView.View = System.Windows.Forms.View.Details;
+            this.fileView.Visible = false;
+            // 
+            // Name
+            // 
+            this.Name.Text = "Name";
+            this.Name.Width = 145;
+            // 
+            // Size
+            // 
+            this.Size.Text = "Size";
+            this.Size.Width = 71;
+            // 
+            // Path
+            // 
+            this.Path.Text = "Path";
+            this.Path.Width = 777;
+            // 
             // GmailViewerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1045, 427);
+            this.Controls.Add(this.fileView);
             this.Controls.Add(this.folderLabel);
             this.Controls.Add(this.folderComboBox);
             this.Controls.Add(this.downloadAllButton);
@@ -280,7 +324,7 @@
             this.Controls.Add(this.mailView);
             this.Margin = new System.Windows.Forms.Padding(4);
             this.MinimumSize = new System.Drawing.Size(841, 464);
-            this.Name = "GmailViewerForm";
+            this.Name.Text = "GmailViewerForm";
             this.Text = "Gmail Viewer";
             this.SaveMenu.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -311,5 +355,9 @@
         private System.Windows.Forms.Button downloadAllButton;
         private System.Windows.Forms.ComboBox folderComboBox;
         private System.Windows.Forms.Label folderLabel;
+        private System.Windows.Forms.ListView fileView;
+        private System.Windows.Forms.ColumnHeader Name;
+        private System.Windows.Forms.ColumnHeader Size;
+        private System.Windows.Forms.ColumnHeader Path;
     }
 }
