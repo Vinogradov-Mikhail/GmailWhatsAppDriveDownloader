@@ -135,6 +135,7 @@ namespace GmailViewer
             }
             else
             {
+                mailView.Visible = false;
                 fileView.Visible = true;
                 ShowBackups();
             }

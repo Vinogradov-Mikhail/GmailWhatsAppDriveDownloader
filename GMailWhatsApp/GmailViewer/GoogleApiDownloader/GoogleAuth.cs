@@ -33,6 +33,7 @@ namespace GmailViewer
                     CancellationToken.None,
                     new FileDataStore(credPath, true)).Result;
             }
+            var s = credential.UserId;
             return credential;
         }
     }

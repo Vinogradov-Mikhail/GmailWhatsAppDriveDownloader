@@ -288,8 +288,10 @@ namespace GmailDownloader
                 {
                     MimeEntity attachmentEntity = mainEntity.ChildEntities.Add();
                     attachmentEntity.ContentTypeString = att.mimeType;
+                    attachmentEntity.ContentDisposition = ContentDisposition_enum.Attachment;
                     attachmentEntity.ContentTransferEncoding = ContentTransferEncoding_enum.QuotedPrintable;
                     attachmentEntity.Data = att.name;
+                    attachmentEntity.ContentDisposition_FileName = att.namestr;
                 }
             }
             emlmes.ToFile(folderPath + "\\" + email.message.Id + ".eml");

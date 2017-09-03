@@ -292,7 +292,7 @@
             // 
             // Name
             // 
-            this.Name.Text = "Name";
+            this.Name.Text = "GmailViewerForm";
             this.Name.Width = 145;
             // 
             // Size
@@ -325,7 +325,7 @@
             this.Margin = new System.Windows.Forms.Padding(4);
             this.MinimumSize = new System.Drawing.Size(841, 464);
             this.Name.Text = "GmailViewerForm";
-            this.Text = "Gmail Viewer";
+            this.Text = "Downloader Gmail and WhatsApp";
             this.SaveMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();

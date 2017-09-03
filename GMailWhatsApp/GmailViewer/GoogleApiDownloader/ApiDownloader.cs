@@ -76,9 +76,8 @@ namespace GmailViewer.GmailDownloader
 
         public void SaveAsType(FolderType emailFolder, int[] ids, string folderPath, string type)
         {
-            request.LabelIds = emailFolder.ToString("f").ToUpper();
-            request.MaxResults = ids[ids.Length - 1] + 1;
-            IList<Message> messages = request.Execute().Messages;
+            var emailFolderStr = emailFolder.ToString("f").ToUpper();
+            IList<Message> messages = ApiClient.GetListOfSomeMessages(service, emailFolderStr, ids[ids.Length - 1] + 1);
             if (messages != null && messages.Count > 0)
             {
                 int j = 0;
@@ -106,9 +105,17 @@ namespace GmailViewer.GmailDownloader
 
         public void SaveAsType(FolderType emailFolder, int amount, string folderPath, string type)
         {
-            request.LabelIds = emailFolder.ToString("f").ToUpper();
-            request.MaxResults = amount;
-            IList<Message> messages = request.Execute().Messages;
+            var emailFolderStr = emailFolder.ToString("f").ToUpper();
+            List<Message> messages;
+            if (amount == 0)
+            {
+                messages = ApiClient.GetListOfAllMessages(service, emailFolderStr);
+            }
+            else
+            {
+                var list = ApiClient.GetListOfSomeMessages(service, emailFolderStr, amount);
+                messages = list.OfType<Message>().ToList();
+            }
             if (messages != null && messages.Count > 0)
             {
                 Parallel.ForEach(messages, (sms) =>
